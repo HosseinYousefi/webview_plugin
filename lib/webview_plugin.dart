@@ -1,13 +1,11 @@
 import 'dart:ui';
 
-import 'package:jni/jni.dart';
-
-import 'webview_plugin_bindings_generated.dart';
-
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:jni/jni.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+
+import 'webview_plugin_bindings_generated.dart';
 
 const _viewType = 'plugins.flutter.io/jnigenwebview';
 
@@ -21,6 +19,7 @@ class JnigenWebViewController extends PlatformWebViewController {
   }
 
   late Future<WebViewWrapper> _view;
+  // ignore: invalid_use_of_internal_member
   Future<int> get id async => (await _view).reference.pointer.address;
 
   JnigenNavigationDelegate? _navigationDelegate;
@@ -62,7 +61,7 @@ class JnigenWebViewController extends PlatformWebViewController {
     final client = await _setClient(view);
     client.setOnUrlChanged(
       Consumer.implement(
-        $ConsumerImpl(
+        $Consumer(
           T: JString.type,
           accept: (object) {
             _navigationDelegate!._urlChangeCallback?.call(
@@ -77,7 +76,7 @@ class JnigenWebViewController extends PlatformWebViewController {
     );
     client.setOnProgressChanged(
       Consumer.implement(
-        $ConsumerImpl(
+        $Consumer(
           T: JInteger.type,
           accept: (object) {
             _navigationDelegate!._progressCallback?.call(object.intValue());
@@ -118,8 +117,7 @@ class JnigenWebViewController extends PlatformWebViewController {
 }
 
 class JnigenWebViewWidget extends PlatformWebViewWidget {
-  JnigenWebViewWidget(PlatformWebViewWidgetCreationParams params)
-      : super.implementation(params);
+  JnigenWebViewWidget(super.params) : super.implementation();
 
   @override
   Widget build(BuildContext context) {
